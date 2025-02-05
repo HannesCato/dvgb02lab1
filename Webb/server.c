@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h>
-#include <netinet\in.h>
+#include <netinet/in.h>
 #include <sys/socket.h> 
 #include <netdb.h>
 #include <errno.h>
@@ -41,27 +41,27 @@ struct sockaddr_in server_addr;
 
 }
 
-void listen()
+void start_listening(int server_fd)
 {
 
 }
 
-int accept_connection()
+int accept_connection(int server_fd)
 {
 
 }
 
-void handle_client()
+void handle_client(int client_socket)
 {
     //Handle the clients request
 }
 
-void response()
+void response(int client_socket, const char *filename)
 {
     //read the HTML-file
 }
 
-void no_response()
+void no_response(int client_socket)
 {
     //Handle if connection server does not respond (404)
 }
