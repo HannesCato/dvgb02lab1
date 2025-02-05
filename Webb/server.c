@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h>
-#include <netinet.h>
+#include <netinet\in.h>
 #include <sys/socket.h> 
 #include <netdb.h>
 
-#define PORT 8080;
+#define PORT 8080
+#define BACKLOG 5
 
  int create_server_socket()
 {
@@ -33,7 +34,7 @@ struct sockaddr_in server_addr;
     close(server_fd);
     exit(EXIT_FAILURE);
  }
-    printf("Socket binding success %dn", PORT);
+    printf("Socket binding success %d\n", PORT);
 
     return server_fd;
 
