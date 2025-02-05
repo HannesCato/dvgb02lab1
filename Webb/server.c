@@ -4,6 +4,7 @@
 #include <netinet\in.h>
 #include <sys/socket.h> 
 #include <netdb.h>
+#include <errno.h>
 
 #define PORT 8080
 #define BACKLOG 5
@@ -40,8 +41,30 @@ struct sockaddr_in server_addr;
 
 }
 
+void listen()
+{
 
+}
 
+int accept_connection()
+{
+
+}
+
+void handle_client()
+{
+    //Handle the clients request
+}
+
+void response()
+{
+    //read the HTML-file
+}
+
+void no_response()
+{
+    //Handle if connection server does not respond (404)
+}
 int main(){
     int server_fd = create_server_socket();
 
