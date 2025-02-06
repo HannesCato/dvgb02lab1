@@ -45,11 +45,21 @@ struct sockaddr_in server_addr;
 
 void start_listening(int server_fd)
 {
-
+if(listen(server_fd, BACKLOG == - 1))
+{
+    perror("Listening failed");
+    close(server_fd);
+    exit(EXIT_FAILURE);
+}
+printf("Listening to port %d\n", PORT);
 }
 
 int accept_connection(int server_fd)
 {
+struct sockaddr_in client_addr;
+socklen_t addr_size = sizeof(client_addr);
+
+int client_socket = accept(server_fd, struct(sockaddr*) &client_addr, &addr_size);
 
 }
 
