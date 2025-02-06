@@ -1,11 +1,11 @@
 Kompilera och köra servern: 
-1️ Kompilera:
+1 Kompilera:
     gcc -o server server.c eller make
-2️ Starta servern:
+2 Starta servern:
     ./server
-3️ Öppna i webbläsaren:
+3 Öppna i webbläsaren:
     http://localhost:8080/
-4️ Testa med curl:
+4 Testa med curl:
     curl http://localhost:8080/index.html
 
 =========================================================================
