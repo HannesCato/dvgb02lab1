@@ -61,11 +61,27 @@ socklen_t addr_size = sizeof(client_addr);
 
 int client_socket = accept(server_fd, struct(sockaddr*) &client_addr, &addr_size);
 
+if(client_socket == - 1)
+{
+    perror("Failed to accept");
+    return -1;
+}
+    return client_socket;
+    printf("Connection Accepted");
 }
 
 void handle_client(int client_socket)
 {
-    //Handle the clients request
+    char buffer[1024];
+
+    int bytes_recieved = read(client_socket, buffer, sizeof(buffer) - 1);
+
+
+    buffer[bytes_recieved] = '\0';
+    printf("Recieved request: \n%s\n", buffer);
+
+    char filename[256] = "index.html";
+    
 }
 
 void response(int client_socket, const char *filename)
@@ -79,7 +95,7 @@ void no_response(int client_socket)
 }
 int main(){
     int server_fd = create_server_socket();
-
+    
 
     close(server_fd);
     return 0;
