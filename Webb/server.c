@@ -59,7 +59,7 @@ int accept_connection(int server_fd)
 struct sockaddr_in client_addr;
 socklen_t addr_size = sizeof(client_addr);
 
-int client_socket = accept(server_fd, struct(sockaddr*) &client_addr, &addr_size);
+int client_socket = accept(server_fd, (struct sockaddr*) &client_addr, &addr_size);
 
 if(client_socket == - 1)
 {
