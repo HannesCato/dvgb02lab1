@@ -86,12 +86,40 @@ void handle_client(int client_socket)
 
 void response(int client_socket, const char *filename)
 {
-    //read the HTML-file
+    FILE *file = fopen(filename, "r");
+    if (!file){
+        perror("File not found");
+        no_response(client_socket);
+        return;
+    }
+
+    char buffer[1024];
+    char response_header[256];
+
+    snprintf(response_header, sizeof(response_header),
+    "HTTP/1.1 200 OK\r\n"
+    "Content-Type: text/html\r\n"
+    "\r\n");
+
+    send(client_socket, response_header, strlen(response_header), 0);
+
+    while(fgets(buffer, sizeof(buffer), file ) != NULL) {
+        send(client_socket, buffer, strlen(buffer), 0);
+    }
+    fclose(file);
+    close(client_socket);
 }
 
 void no_response(int client_socket)
 {
-    //Handle if connection server does not respond (404)
+    const char *response =
+        "HTTP/1.1 404 Not Found\r\n"
+        "Content-Type: text/html\r\n"
+        "\r\n"
+        "<html><body><h1>404 Not Found</h1><p>The requested file was not found.</p></body></html>";
+
+    send(client_socket, response, strlen(response), 0);
+    close(client_socket);
 }
 int main(){
     int server_fd = create_server_socket();
