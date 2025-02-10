@@ -18,7 +18,7 @@ int create_server_socket()
     int server_fd;
     struct sockaddr_in server_addr;
     int opt = 1;
-
+    
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("Socket error");
         exit(EXIT_FAILURE);
@@ -186,7 +186,7 @@ void no_response(int client_socket)
         "Content-Type: text/html\r\n"
         "\r\n", strlen(body));
 
-    if (send(client_socket, response_header, strlen(response_header), 0) == -1) {
+   if (send(client_socket, response_header, strlen(response_header), 0) == -1) {
         perror("Error sending 404 response header");
     }
 
@@ -195,6 +195,7 @@ void no_response(int client_socket)
     }
 
     close(client_socket);
+    
 }
 
 int main() {
