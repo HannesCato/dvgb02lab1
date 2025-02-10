@@ -17,10 +17,16 @@ int create_server_socket()
 {
     int server_fd;
     struct sockaddr_in server_addr;
+    int opt = 1;
 
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if(server_fd == -1){
-        perror("Failed to create socket");
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        perror("Socket error");
+        exit(EXIT_FAILURE);
+    }
+
+
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0){
+        perror("Setsockopt error");
         exit(EXIT_FAILURE);
     }
 
@@ -107,6 +113,9 @@ void response(int client_socket, const char *filename)
     snprintf(filepath, sizeof(filepath), "sample_website/%s", filename); // Sökväg till sample_website/
 
     printf("Trying to open file: %s\n", filepath);
+
+    printf("Full file path: %s\n", filepath);
+
 
     FILE *file = fopen(filepath, "r");
     if (!file){
