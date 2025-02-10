@@ -19,25 +19,21 @@ int create_server_socket()
     struct sockaddr_in server_addr;
     int opt = 1;
 
-    // Skapa socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("Socket error");
         exit(EXIT_FAILURE);
     }
 
-    // 🔥 Sätt SO_REUSEADDR innan bind() för att undvika "Address already in use"
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0){
         perror("Setsockopt error");
         close(server_fd);
         exit(EXIT_FAILURE);
     }
 
-    // Konfigurera serverns adress
     server_addr.sin_family = AF_INET;  
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(PORT);
 
-    // Bind socket till port
     if (bind(server_fd, (struct sockaddr*) &server_addr, sizeof(server_addr)) == -1)
     {
         perror("Binding failed");
@@ -115,22 +111,17 @@ void handle_client(int client_socket)
 void response(int client_socket, const char *filename)
 {
     char filepath[512];
-    snprintf(filepath, sizeof(filepath), "sample_website/%s", filename); // Sökväg till sample_website/
+    snprintf(filepath, sizeof(filepath), "./%s", filename); // Läs från den aktuella katalogen
 
     printf("Trying to open file: %s\n", filepath);
 
-    printf("Full file path: %s\n", filepath);
-
-
-    FILE *file = fopen(filepath, "rb");
+    FILE *file = fopen(filepath, "rb");  // Öppna som binärfil för bilder
     if (!file){
         perror("File not found");
         printf("404 for file: %s\n", filepath);
         no_response(client_socket);
         return;
     }
-
-    printf("File opened successfully: %s\n", filepath);
 
     char buffer[1024];
     char response_header[256];
@@ -140,11 +131,25 @@ void response(int client_socket, const char *filename)
     rewind(file);
     printf("File size: %ld bytes\n", file_size);
 
+    const char *content_type = "application/octet-stream"; 
+
+    if (strstr(filename, ".html")) {
+        content_type = "text/html";
+    } else if (strstr(filename, ".jpg") || strstr(filename, ".jpeg")) {
+        content_type = "image/jpeg";
+    } else if (strstr(filename, ".png")) {
+        content_type = "image/png";
+    } else if (strstr(filename, ".css")) {
+        content_type = "text/css";
+    } else if (strstr(filename, ".js")) {
+        content_type = "application/javascript";
+    }
+
     snprintf(response_header, sizeof(response_header),
     "HTTP/1.1 200 OK\r\n"
     "Content-Length: %ld\r\n"
-    "Content-Type: text/html\r\n"
-    "\r\n", file_size);
+    "Content-Type: %s\r\n"
+    "\r\n", file_size, content_type);
 
     printf("Sending response header...\n");
     if (send(client_socket, response_header, strlen(response_header), 0) == -1) {
@@ -153,33 +158,40 @@ void response(int client_socket, const char *filename)
         close(client_socket);
         return;
     }
-    printf("Response header sent!\n");
 
-    printf("Sending file content...\n");
     size_t bytes_read;
     while ((bytes_read = fread(buffer, 1, sizeof(buffer), file)) > 0) {
         if (send(client_socket, buffer, bytes_read, 0) == -1) {
-            perror("Error sending file content");
+            perror("error sending file content");
             break;
         }
     }
 
-    printf("File sent successfully!\n");
+    printf("File sent!\n");
 
     fclose(file);
     close(client_socket);
 }
 
+
 void no_response(int client_socket)
 {
-    const char *response =
-        "HTTP/1.1 404 Not Found\r\n"
-        "Content-Type: text/html\r\n"
-        "\r\n"
+    const char *body =
         "<html><body><h1>404 Not Found</h1><p>The requested file was not found.</p></body></html>";
+    
+    char response_header[256];
+    snprintf(response_header, sizeof(response_header),
+        "HTTP/1.1 404 Not Found\r\n"
+        "Content-Length: %ld\r\n"
+        "Content-Type: text/html\r\n"
+        "\r\n", strlen(body));
 
-    if (send(client_socket, response, strlen(response), 0) == -1) {
-        perror("Error sending 404 response");
+    if (send(client_socket, response_header, strlen(response_header), 0) == -1) {
+        perror("Error sending 404 response header");
+    }
+
+    if (send(client_socket, body, strlen(body), 0) == -1) {
+        perror("Error sending 404 response body");
     }
 
     close(client_socket);
