@@ -19,22 +19,26 @@ int create_server_socket()
     struct sockaddr_in server_addr;
     int opt = 1;
 
+    // Skapa socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("Socket error");
         exit(EXIT_FAILURE);
     }
 
-
+    // 🔥 Sätt SO_REUSEADDR innan bind() för att undvika "Address already in use"
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0){
         perror("Setsockopt error");
+        close(server_fd);
         exit(EXIT_FAILURE);
     }
 
+    // Konfigurera serverns adress
     server_addr.sin_family = AF_INET;  
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(PORT);
 
-    if(bind(server_fd, (struct sockaddr*) &server_addr, sizeof(server_addr)) == -1)
+    // Bind socket till port
+    if (bind(server_fd, (struct sockaddr*) &server_addr, sizeof(server_addr)) == -1)
     {
         perror("Binding failed");
         close(server_fd);
@@ -44,6 +48,7 @@ int create_server_socket()
     printf("Socket binding success %d\n", PORT);
     return server_fd;
 }
+
 
 void start_listening(int server_fd)
 {
@@ -117,7 +122,7 @@ void response(int client_socket, const char *filename)
     printf("Full file path: %s\n", filepath);
 
 
-    FILE *file = fopen(filepath, "r");
+    FILE *file = fopen(filepath, "rb");
     if (!file){
         perror("File not found");
         printf("404 for file: %s\n", filepath);
