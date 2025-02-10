@@ -26,7 +26,6 @@ int create_socket_udp() {
     server_addr.sin_addr.s_addr = INADDR_ANY;  
     server_addr.sin_port = htons(TIME_PORT);  
 
-    // 4. Binda socketen till port 37
     if (bind(sock_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         perror("Binding failed");
         close(sock_fd);
@@ -35,22 +34,40 @@ int create_socket_udp() {
 
     return sock_fd;
 }
+void wait_for_request(int sockfd, struct sockaddr_in *client_addr, socklen_t *client_len) {
+    char buffer[1];  // Tom buffer (RFC 868 kräver ingen data i förfrågan)
+
+    printf("Waiting for request...\n");
+
+    // Mottar en tom förfrågan från klienten
+    if (recvfrom(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *)client_addr, client_len) >= 0) {
+        printf("Received request from client\n");
+    } else {
+        perror("Receive failed");
+    }
+}
 
 int main() {
-    // Skapa och binda socketen
-    int sock_fd = create_socket_udp();
+    int sockfd = create_socket_udp();  // Skapa och binda socket
+    struct sockaddr_in client_addr;
+    socklen_t client_len = sizeof(client_addr);
+
     printf("Socket skapades och är bunden till port %d.\n", TIME_PORT);
 
-    // Stäng socketen (kommer att ersättas senare när vi har en loop)
-    close(sock_fd);
+    // Vänta på en UDP-förfrågan
+    wait_for_request(sockfd, &client_addr, &client_len);
+
+    close(sockfd);
     return 0;
 }
 
 
-/* void wait_req(){
 
-}
+/**
+ */
 
+
+/*
 //wait for UDP request
 
 
