@@ -11,5 +11,30 @@
 
 int main()
 {
-    
+ 
 }
+
+int create_socket_udp()
+{
+int sock_fd;
+struct sockadrr_in server_addr;
+
+
+}
+
+
+wait_req()
+{}
+
+get_time()
+{
+
+}
+
+
+send_time()
+{}
+
+
+run()
+{}
