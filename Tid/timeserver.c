@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <stdint.h>
 
-#define TIME_PORT 5000 // RFC 868
+#define TIME_PORT 37 // RFC 868
 #define TIME_DIFF 2208988800U
 
 int create_socket_udp() {

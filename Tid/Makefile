@@ -1,11 +1,15 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99
-TARGETS = timeserver
+SERVER = timeserver
+CLIENT = client
 
-all: $(TARGETS)
+all: $(SERVER) $(CLIENT)
 
-timeserver: timeserver.c
-	$(CC) $(CFLAGS) -o timeserver timeserver.c
+$(SERVER): timeserver.c
+	$(CC) $(CFLAGS) -o $(SERVER) timeserver.c
+
+$(CLIENT): client.c
+	$(CC) $(CFLAGS) -o $(CLIENT) client.c
 
 clean:
-	rm -f $(TARGETS)
+	rm -f $(SERVER) $(CLIENT)
