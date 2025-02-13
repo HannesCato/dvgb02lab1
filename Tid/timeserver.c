@@ -94,7 +94,7 @@ void send_time(int sockfd, struct sockaddr_in *client_addr, socklen_t client_len
 }
 
 int main() {
-    int sockfd = create_socket_udp();  // Skapa och binda socket
+    int sockfd = create_socket_udp();
     struct sockaddr_in client_addr;
     socklen_t client_len = sizeof(client_addr);
 
